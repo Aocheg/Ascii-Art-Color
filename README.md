@@ -4,117 +4,25 @@
 
 ## Features
 - Converts text into ASCII art
-- Supports multiple banner files (e.g., standard, shadow, thinkertoy)
-- Handles newline characters (\n) for multi-line output
+- Supports multiple banner files (standard, shadow, thinkertoy)
+- Handles newline characters (`\n`) for multi-line output
+- Color support via `--color=<color>` flag
+- Supports coloring a specific substring or the     entire text
 - Preserves spacing and alignment of ASCII characters
 - Reads input from command-line arguments
+- Only uses standard Go packages
 ## How It Works
-    The program reads user input from the command line.
-    It normalizes escape sequences like \n into real newlines.
-    A banner file is loaded and parsed into a map[rune][]string, where each rune maps to its ASCII representation.
-    The input is split into lines and rendered row-by-row.
-    Each character is printed line by line to form the final ASCII output.
+## How It Works
+1. Reads user input from command-line arguments.
+2. Normalizes escape sequences like `\n` into real newlines.
+3. Loads a banner file and parses it into a `map[rune][]string`.
+4. Generates ASCII art line by line.
+5. Applies color to specified substring (or whole text) using ANSI escape codes.
+6. Renders the final output to the terminal.
 ## Usage
-
-    student$ go run . "" | cat -e
-    student$ go run . "\n" | cat -e
-    $
-    student$ go run . "Hello\n" | cat -e
-     _    _          _   _          $
-    | |  | |        | | | |         $
-    | |__| |   ___  | | | |   ___   $
-    |  __  |  / _ \ | | | |  / _ \  $
-    | |  | | |  __/ | | | | | (_) | $
-    |_|  |_|  \___| |_| |_|  \___/  $
-                                    $
-                                    $
-    $
-    student$ go run . "hello" | cat -e
-     _              _   _          $
-    | |            | | | |         $
-    | |__     ___  | | | |   ___   $
-    |  _ \   / _ \ | | | |  / _ \  $
-    | | | | |  __/ | | | | | (_) | $
-    |_| |_|  \___| |_| |_|  \___/  $
-                                   $
-                                   $
-    student$ go run . "HeLlO" | cat -e
-     _    _          _        _    ____   $
-    | |  | |        | |      | |  / __ \  $
-    | |__| |   ___  | |      | | | |  | | $
-    |  __  |  / _ \ | |      | | | |  | | $
-    | |  | | |  __/ | |____  | | | |__| | $
-    |_|  |_|  \___| |______| |_|  \____/  $
-                                          $
-                                          $
-    student$ go run . "Hello There" | cat -e
-     _    _          _   _                 _______   _                           $
-    | |  | |        | | | |               |__   __| | |                          $
-    | |__| |   ___  | | | |   ___            | |    | |__     ___   _ __    ___  $
-    |  __  |  / _ \ | | | |  / _ \           | |    |  _ \   / _ \ | '__|  / _ \ $
-    | |  | | |  __/ | | | | | (_) |          | |    | | | | |  __/ | |    |  __/ $
-    |_|  |_|  \___| |_| |_|  \___/           |_|    |_| |_|  \___| |_|     \___| $
-                                                                                 $
-                                                                                 $
-    student$ go run . "1Hello 2There" | cat -e
-         _    _          _   _                         _______   _                           $
-    _   | |  | |        | | | |                ____   |__   __| | |                          $
-    / | | |__| |   ___  | | | |   ___         |___ \     | |    | |__     ___   _ __    ___  $
-    | | |  __  |  / _ \ | | | |  / _ \          __) |    | |    |  _ \   / _ \ | '__|  / _ \ $
-    | | | |  | | |  __/ | | | | | (_) |        / __/     | |    | | | | |  __/ | |    |  __/ $
-    |_| |_|  |_|  \___| |_| |_|  \___/        |_____|    |_|    |_| |_|  \___| |_|     \___| $
-                                                                                             $
-                                                                                             $
-    student$ go run . "{Hello There}" | cat -e
-       __  _    _          _   _                 _______   _                           __    $
-      / / | |  | |        | | | |               |__   __| | |                          \ \   $
-     | |  | |__| |   ___  | | | |   ___            | |    | |__     ___   _ __    ___   | |  $
-    / /   |  __  |  / _ \ | | | |  / _ \           | |    |  _ \   / _ \ | '__|  / _ \   \ \ $
-    \ \   | |  | | |  __/ | | | | | (_) |          | |    | | | | |  __/ | |    |  __/   / / $
-     | |  |_|  |_|  \___| |_| |_|  \___/           |_|    |_| |_|  \___| |_|     \___|  | |  $
-      \_\                                                                              /_/   $
-                                                                                             $
-    student$ go run . "Hello\nThere" | cat -e
-     _    _          _   _          $
-    | |  | |        | | | |         $
-    | |__| |   ___  | | | |   ___   $
-    |  __  |  / _ \ | | | |  / _ \  $
-    | |  | | |  __/ | | | | | (_) | $
-    |_|  |_|  \___| |_| |_|  \___/  $
-                                    $
-                                    $
-     _______   _                           $
-    |__   __| | |                          $
-       | |    | |__     ___   _ __    ___  $
-       | |    |  _ \   / _ \ | '__|  / _ \ $
-       | |    | | | | |  __/ | |    |  __/ $
-       |_|    |_| |_|  \___| |_|     \___| $
-                                           $
-                                           $
-    student$ go run . "Hello\n\nThere" | cat -e
-     _    _          _   _          $
-    | |  | |        | | | |         $
-    | |__| |   ___  | | | |   ___   $
-    |  __  |  / _ \ | | | |  / _ \  $
-    | |  | | |  __/ | | | | | (_) | $
-    |_|  |_|  \___| |_| |_|  \___/  $
-                                    $
-                                    $
-    $
-    ______  _                           $
-    |____| | |                          $
-    | |    | |__     ___   _ __    ___  $
-    | |    |  _ \   / _ \ | '__|  / _ \ $
-    | |    | | | | |  __/ | |    |  __/ $
-    |_|    |_| |_|  \___| |_|     \___| $
-                                        $
-                                        $
-    student$
-  
-## Using a banner file:
-- go run . "Hello" standard
-- Banner File Format
-
+```bash
+    go run . --color=red kit "a king kitten have kit"
+```
 ## Each character is represented using:
 
 - 8 lines of ASCII art
@@ -123,28 +31,39 @@
 - Characters start from ASCII 32 (space) to 126 (~).
 
 ## Project Structure
-    .
+    ├── ascii_test.go
+    ├── color.go
     ├── generate.go
-    ├── GetInput.go
+    ├── go.mod
     ├── Loadbanner.go
     ├── main.go
+    ├── matcher.go
     ├── normalize.go
+    ├── README.md
+    ├── render.go
+    ├── testhelpers_test.go
     ├── validation.go
     ├── banners:
         ├── shadow.txt
     |   ├── standard.txt
     │   ├__ thinkertoy.txt
     │   
+## Supported Colors
+
+- Named colors: black, red, green, yellow, blue, purple, cyan, white, and their bright- variants
+- Hex colors: #RRGGBB (e.g. #FF0000 for red)
+
 ## Common Issues
-    Incorrect spacing usually comes from trimming spaces or modifying banner lines.
-    Missing or extra newlines often come from improper handling of "" after splitting input.
-    Ensure banner file format matches expected structure (8 lines per character + separator).
+- Ensure banner files are in the correct format (exactly 95 characters).
+- Color flag must be in the exact format --color=<value>.
+- Only ASCII characters (32-126) are supported.
 
 ## Allowed packages
     This project allow only standard Go packages
 
 ## This project will help you learn about :
-
-- The Go file system(fs) API
-
-- Data manipulation
+- Go file system (fs) API
+- String manipulation and rune handling
+- ANSI escape codes for terminal coloring
+- Command-line argument parsing
+- Unit testing in Go

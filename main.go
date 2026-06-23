@@ -12,9 +12,6 @@ func main() {
 
 	args := os.Args[1:]
 
-	// -------------------------
-	// FLAG PARSING: --color=<color>
-	// -------------------------
 	// The spec requires the exact attached form --color=<color>.
 	// Any other "--color ..." form (e.g. space-separated, missing "=",
 	// or an empty color value) is invalid and must show the usage message.
@@ -40,9 +37,7 @@ func main() {
 
 		// When the flag is present, the next argument (if any, and if it
 		// isn't the final [STRING]/[BANNER] arguments) is the optional
-		// substring to color. The last remaining argument is always the
-		// text/banner payload, so a substring is only present when there
-		// are at least two arguments left.
+		// substring to color.
 		if len(args) >= 2 {
 			sub = args[0]
 			args = args[1:]
@@ -59,26 +54,20 @@ func main() {
 		return
 	}
 
-	// -------------------------
-	// BANNER DETECTION
-	// -------------------------
-	banner := "standard.txt"
+	banner := "banners/standard.txt"
 
 	last := args[len(args)-1]
 
 	switch last {
-	case "standard", "shadow", "thinkertoy":
+	case "banners/standard", "banners/shadow", "banners/thinkertoy":
 		banner = last + ".txt"
 		args = args[:len(args)-1]
 
-	case "standard.txt", "shadow.txt", "thinkertoy.txt":
+	case "banners/standard.txt", "banners/shadow.txt", "banners/thinkertoy.txt":
 		banner = last
 		args = args[:len(args)-1]
 	}
 
-	// -------------------------
-	// BUILD FULL TEXT
-	// -------------------------
 	text := strings.Join(args, " ")
 
 	if text == "" {
@@ -93,30 +82,18 @@ func main() {
 
 	text = NormalizeInput(text)
 
-	// -------------------------
-	// LOAD BANNER
-	// -------------------------
 	asciiMap, err := LoadBanner(banner)
 	if err != nil {
 		fmt.Println("Error loading banner:", err)
 		os.Exit(1)
 	}
 
-	// -------------------------
-	// VALIDATE INPUT
-	// -------------------------
 	if err := ValidateInput(text, asciiMap); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// -------------------------
-	// GENERATE ART
-	// -------------------------
 	art := GenerateArt(text, asciiMap)
 
-	// -------------------------
-	// RENDER OUTPUT
-	// -------------------------
 	RenderColoredArt(text, art, asciiMap, color, sub)
 }
